@@ -317,6 +317,14 @@ if SENTRY_DSN:
     )
 
 # Logging Configuration
+# Ensure logs directory exists
+LOGS_DIR = BASE_DIR / 'logs'
+try:
+    os.makedirs(LOGS_DIR, exist_ok=True)
+except Exception:
+    # Fallback to BASE_DIR if logs dir cannot be created
+    LOGS_DIR = BASE_DIR
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -343,7 +351,7 @@ LOGGING = {
         },
         'file': {
             'class': 'logging.FileHandler',
-            'filename': 'logs/app.log',
+            'filename': str(LOGS_DIR / 'app.log'),
             'formatter': 'structured',
             'filters': ['request_id'],
         },
