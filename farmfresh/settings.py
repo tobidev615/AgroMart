@@ -70,35 +70,6 @@ INSTALLED_APPS = [
     'consumers',
 ]
 
-# Feature flags for optional modules (controlled via environment variables)
-FEATURE_PAYMENTS_ENABLED = env.bool('FEATURE_PAYMENTS_ENABLED', default=True)
-FEATURE_SUBSCRIPTIONS_ENABLED = env.bool('FEATURE_SUBSCRIPTIONS_ENABLED', default=True)
-FEATURE_DELIVERIES_ENABLED = env.bool('FEATURE_DELIVERIES_ENABLED', default=True)
-FEATURE_DISTRIBUTORS_ENABLED = env.bool('FEATURE_DISTRIBUTORS_ENABLED', default=True)
-FEATURE_NOTIFICATIONS_ENABLED = env.bool('FEATURE_NOTIFICATIONS_ENABLED', default=True)
-FEATURE_BUSINESS_ENABLED = env.bool('FEATURE_BUSINESS_ENABLED', default=True)
-FEATURE_CONSUMERS_ENABLED = env.bool('FEATURE_CONSUMERS_ENABLED', default=True)
-
-# Optionally remove apps entirely if disabled (keeps migrations simpler if left installed)
-OPTIONALLY_INSTALLED_APPS = {
-    'payments': FEATURE_PAYMENTS_ENABLED,
-    'subscriptions': FEATURE_SUBSCRIPTIONS_ENABLED,
-    'deliveries': FEATURE_DELIVERIES_ENABLED,
-    'distributors': FEATURE_DISTRIBUTORS_ENABLED,
-    'notifications': FEATURE_NOTIFICATIONS_ENABLED,
-    'business': FEATURE_BUSINESS_ENABLED,
-}
-
-# Prune INSTALLED_APPS by feature flags (keep core apps regardless)
-_pruned_apps = []
-for app_label in INSTALLED_APPS:
-    if app_label in OPTIONALLY_INSTALLED_APPS:
-        if OPTIONALLY_INSTALLED_APPS[app_label]:
-            _pruned_apps.append(app_label)
-    else:
-        _pruned_apps.append(app_label)
-INSTALLED_APPS = _pruned_apps
-
 # Django REST framework settings (see consolidated config below)
 
 MIDDLEWARE = [
@@ -317,14 +288,6 @@ if SENTRY_DSN:
     )
 
 # Logging Configuration
-# Ensure logs directory exists
-LOGS_DIR = BASE_DIR / 'logs'
-try:
-    os.makedirs(LOGS_DIR, exist_ok=True)
-except Exception:
-    # Fallback to BASE_DIR if logs dir cannot be created
-    LOGS_DIR = BASE_DIR
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -351,7 +314,7 @@ LOGGING = {
         },
         'file': {
             'class': 'logging.FileHandler',
-            'filename': str(LOGS_DIR / 'app.log'),
+            'filename': 'logs/app.log',
             'formatter': 'structured',
             'filters': ['request_id'],
         },
