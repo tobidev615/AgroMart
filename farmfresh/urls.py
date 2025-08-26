@@ -74,6 +74,22 @@ urlpatterns += [
     path('api/', include('orders.urls')),
 ]
 
+# Optional legacy routes based on feature flags
+if getattr(settings, 'FEATURE_DELIVERIES_ENABLED', False):
+    urlpatterns += [path('api/', include('deliveries.urls'))]
+if getattr(settings, 'FEATURE_NOTIFICATIONS_ENABLED', False):
+    urlpatterns += [path('api/', include('notifications.urls'))]
+if getattr(settings, 'FEATURE_SUBSCRIPTIONS_ENABLED', False):
+    urlpatterns += [path('api/', include('subscriptions.urls'))]
+if getattr(settings, 'FEATURE_BUSINESS_ENABLED', False):
+    urlpatterns += [path('api/business/', include('business.urls'))]
+if getattr(settings, 'FEATURE_DISTRIBUTORS_ENABLED', False):
+    urlpatterns += [path('api/distributors/', include('distributors.urls'))]
+if getattr(settings, 'FEATURE_CONSUMERS_ENABLED', True):
+    urlpatterns += [path('api/consumers/', include('consumers.urls'))]
+if getattr(settings, 'FEATURE_PAYMENTS_ENABLED', False):
+    urlpatterns += [path('api/', include('payments.urls'))]
+
 # Serve static and media files
 if settings.DEBUG:
     # In development, serve files directly
