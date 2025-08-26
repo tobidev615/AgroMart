@@ -39,12 +39,29 @@ class FarmCluster(models.Model):
 
 class Produce(models.Model):
     farmer = models.ForeignKey(FarmerProfile, on_delete=models.CASCADE, related_name="produce")
-    name = models.CharField(max_length=255)
+    
+    class ProduceName(models.TextChoices):
+        TOMATOES = "TOMATOES", "Tomatoes"
+        YAM = "YAM", "Yam"
+        TATASHE = "TATASHE", "Tatashe"
+        BELL_PEPPER = "BELL_PEPPER", "Bell pepper"
+        CAYENNE_PEPPER = "CAYENNE_PEPPER", "Cayenne pepper (Sombo & Bawa)"
+        SCOTCH_BONNET = "SCOTCH_BONNET", "Scotch bonnet pepper (Ata rodo)"
+        MAIZE = "MAIZE", "Maize (Corn)"
+    
+    class Unit(models.TextChoices):
+        KG = "KG", "KG"
+        CRATES = "CRATES", "Crates"
+        BUNCHES = "BUNCHES", "Bunches"
+        TUBERS = "TUBERS", "Tubers"
+        SACS = "SACS", "Sacs"
+    
+    name = models.CharField(max_length=255, choices=ProduceName.choices)
     variety = models.CharField(max_length=255, blank=True)
     description = models.TextField(blank=True)
     image = models.ImageField(upload_to='produce/', blank=True, null=True)
     quantity_available = models.PositiveIntegerField(default=0, validators=[MinValueValidator(0)])
-    unit = models.CharField(max_length=50)
+    unit = models.CharField(max_length=50, choices=Unit.choices)
     price_per_unit = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
     available = models.BooleanField(default=True)
     total_sold = models.PositiveIntegerField(default=0)
@@ -57,6 +74,12 @@ class Produce(models.Model):
             models.Index(fields=['available']),
             models.Index(fields=['created_at']),
             models.Index(fields=['farmer', 'available']),
+        ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=['farmer', 'name', 'variety', 'unit'],
+                name='uniq_farmer_produce_variant_unit',
+            )
         ]
 
     def __str__(self) -> str:
