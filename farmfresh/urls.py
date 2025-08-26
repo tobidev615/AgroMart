@@ -48,26 +48,30 @@ urlpatterns = [
     path('api/v1/accounts/', include('userprofiles.urls')),
     path('api/v1/farmers/', include('farmers.urls')),
     path('api/v1/', include('orders.urls')),
-    path('api/v1/', include('deliveries.urls')),
-    path('api/v1/', include('notifications.urls')),
-    path('api/v1/', include('subscriptions.urls')),
-    path('api/v1/business/', include('business.urls')),
-    path('api/v1/distributors/', include('distributors.urls')),
-    path('api/v1/consumers/', include('consumers.urls')),
-    path('api/v1/', include('payments.urls')),
-    
-    # Legacy endpoints (redirect to v1)
+]
+
+# Optional modules based on feature flags
+if getattr(settings, 'FEATURE_DELIVERIES_ENABLED', False):
+    urlpatterns += [path('api/v1/', include('deliveries.urls'))]
+if getattr(settings, 'FEATURE_NOTIFICATIONS_ENABLED', False):
+    urlpatterns += [path('api/v1/', include('notifications.urls'))]
+if getattr(settings, 'FEATURE_SUBSCRIPTIONS_ENABLED', False):
+    urlpatterns += [path('api/v1/', include('subscriptions.urls'))]
+if getattr(settings, 'FEATURE_BUSINESS_ENABLED', False):
+    urlpatterns += [path('api/v1/business/', include('business.urls'))]
+if getattr(settings, 'FEATURE_DISTRIBUTORS_ENABLED', False):
+    urlpatterns += [path('api/v1/distributors/', include('distributors.urls'))]
+if getattr(settings, 'FEATURE_CONSUMERS_ENABLED', True):
+    urlpatterns += [path('api/v1/consumers/', include('consumers.urls'))]
+if getattr(settings, 'FEATURE_PAYMENTS_ENABLED', False):
+    urlpatterns += [path('api/v1/', include('payments.urls'))]
+
+# Legacy endpoints (redirect to v1) - keep minimal to avoid exposing disabled features
+urlpatterns += [
     path('api/', include('api.urls')),
     path('api/accounts/', include('userprofiles.urls')),
     path('api/farmers/', include('farmers.urls')),
     path('api/', include('orders.urls')),
-    path('api/', include('deliveries.urls')),
-    path('api/', include('notifications.urls')),
-    path('api/', include('subscriptions.urls')),
-    path('api/business/', include('business.urls')),
-    path('api/distributors/', include('distributors.urls')),
-    path('api/consumers/', include('consumers.urls')),
-    path('api/', include('payments.urls')),
 ]
 
 # Serve static and media files
