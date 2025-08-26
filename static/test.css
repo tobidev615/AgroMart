@@ -1,0 +1,9 @@
+/* Test CSS file to verify static file serving */
+body {
+    background-color: #f0f0f0;
+}
+
+.test-static {
+    color: red;
+    font-weight: bold;
+}

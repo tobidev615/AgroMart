@@ -1,0 +1,77 @@
+# FarmFresh Django REST API - Environment Variables Example
+# Copy this file to .env and fill in your actual values
+
+# Django Settings
+DEBUG=True
+SECRET_KEY=your-secret-key-here-change-in-production
+ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
+
+# Database Configuration
+# Uncomment and configure ONE of these options:
+
+# Option 1: SQLite (Development/Testing)
+# DATABASE_URL= (leave empty for SQLite)
+
+# Option 2: MySQL (Production)
+# DATABASE_URL=mysql://username:password@hostname:3306/database_name
+
+# Option 3: PostgreSQL (Production - Recommended)
+# DATABASE_URL=postgresql://username:password@hostname:5432/database_name
+
+# Option 4: Railway PostgreSQL
+# DATABASE_URL=postgresql://postgres:password@containers-us-west-1.railway.app:5432/railway
+
+# Option 5: Heroku PostgreSQL
+# DATABASE_URL=postgresql://username:password@hostname:5432/database_name
+
+# Redis Configuration
+# Uncomment and configure for caching and Celery:
+
+# Option 1: Local Redis
+# REDIS_URL=redis://localhost:6379/0
+
+# Option 2: Railway Redis
+# REDIS_URL=redis://default:password@containers-us-west-1.railway.app:6379
+
+# Option 3: Heroku Redis
+# REDIS_URL=redis://username:password@hostname:6379
+
+# Cache Configuration
+# Uncomment if using Redis for caching:
+# CACHE_URL=redis://localhost:6379/1
+
+# Email Configuration
+EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_HOST_USER=your-email@gmail.com
+EMAIL_HOST_PASSWORD=your-app-password
+EMAIL_USE_TLS=True
+DEFAULT_FROM_EMAIL=noreply@agromart.com
+
+# Twilio Configuration (Optional)
+TWILIO_ACCOUNT_SID=your-twilio-account-sid
+TWILIO_AUTH_TOKEN=your-twilio-auth-token
+TWILIO_FROM_NUMBER=+1234567890
+
+# Stripe Configuration (Optional)
+STRIPE_API_KEY=sk_test_your-stripe-test-key
+STRIPE_WEBHOOK_SECRET=whsec_your-webhook-secret
+
+# CORS/CSRF Settings
+CORS_ALLOW_ALL_ORIGINS=True
+CORS_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+CSRF_TRUSTED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+
+# Sentry Configuration (Optional)
+SENTRY_DSN=your-sentry-dsn
+SENTRY_ENVIRONMENT=development
+
+# AWS S3 Configuration (Optional)
+AWS_ACCESS_KEY_ID=your-aws-access-key
+AWS_SECRET_ACCESS_KEY=your-aws-secret-key
+AWS_STORAGE_BUCKET_NAME=your-bucket-name
+AWS_S3_REGION_NAME=us-east-1
+
+# Media Storage
+MEDIA_URL=/media/

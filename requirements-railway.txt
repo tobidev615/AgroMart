@@ -1,0 +1,44 @@
+# AgroMart Django REST API - Railway Requirements
+# Optimized for Railway deployment without Docker
+
+# Core Django
+Django==4.2.23
+djangorestframework==3.15.2
+djangorestframework-simplejwt==5.3.1
+
+# Database
+dj-database-url==2.1.0
+PyMySQL==1.1.0  # Pure Python MySQL client (no compilation needed)
+# Alternative: mysql-connector-python==8.2.0  # Pure Python MySQL connector
+
+# Environment and utilities
+django-environ==0.11.2
+django-cors-headers==4.4.0
+django-filter==23.5
+
+# API Documentation
+drf-spectacular==0.28.0
+
+# Production server
+gunicorn==23.0.0
+
+# Background tasks
+celery==5.5.3
+redis==6.1.1
+
+# Monitoring
+sentry-sdk==1.45.1
+
+# Storage and file handling
+django-storages==1.14.6
+boto3==1.37.38
+Pillow==10.4.0
+
+# Notifications and payments
+twilio==9.7.0
+stripe==12.4.0
+# weasyprint==61.2  # Disabled due to system dependencies
+
+# Timezone and caching
+pytz==2025.2
+django-redis==5.4.0
