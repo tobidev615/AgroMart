@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.utils import timezone as dj_timezone
 
 from orders.models import Order
 
@@ -24,6 +25,7 @@ class DeliveryBatch(models.Model):
     batch_date = models.DateField()
     status = models.CharField(max_length=20, choices=DeliveryBatchStatus.choices, default=DeliveryBatchStatus.DRAFT)
     cutoff_at = models.DateTimeField(null=True, blank=True, help_text="After this time, orders fall into the next batch")
+    window = models.ForeignKey('deliveries.DeliveryWindow', on_delete=models.PROTECT, null=True, blank=True, related_name='batches')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -37,6 +39,25 @@ class DeliveryBatch(models.Model):
         label = self.name or self.batch_date.isoformat()
         return f"Batch {label} ({self.status})"
 
+
+class DeliveryWindow(models.Model):
+    """Configurable delivery windows with cutoff rules and days-of-week constraints."""
+    name = models.CharField(max_length=120)
+    days_of_week = models.JSONField(default=list, help_text="List of integers 0-6 (Mon-Sun)")
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+    cutoff_time = models.TimeField(help_text="Time of day cutoff to lock batches")
+    zone = models.CharField(max_length=120, blank=True)
+    active = models.BooleanField(default=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['active']),
+            models.Index(fields=['zone']),
+        ]
+
+    def __str__(self) -> str:
+        return self.name
 
 class Delivery(models.Model):
     order = models.OneToOneField('orders.Order', on_delete=models.CASCADE, related_name='delivery')

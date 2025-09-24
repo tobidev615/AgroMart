@@ -28,6 +28,10 @@ class Subscription(models.Model):
     start_date = models.DateField()
     next_delivery_date = models.DateField()
     is_active = models.BooleanField(default=True)
+    skip_next = models.BooleanField(default=False)
+    paused_at = models.DateTimeField(null=True, blank=True)
+    last_renewal_at = models.DateTimeField(null=True, blank=True)
+    last_renewal_result = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
