@@ -11,8 +11,8 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework import viewsets
 
-from .models import Cart, CartItem, Order, OrderItem, OrderStatus
-from .serializers import CartSerializer, CartItemSerializer, OrderSerializer
+from .models import Cart, CartItem, Order, OrderItem, OrderStatus, MixedBox
+from .serializers import CartSerializer, CartItemSerializer, OrderSerializer, MixedBoxSerializer
 from notifications.utils import notify_user
 from deliveries.models import Delivery, DeliveryStatus
 from farmers.models import FarmerEarnings
@@ -201,6 +201,17 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Order.objects.select_related('user').prefetch_related('items', 'items__produce', 'items__produce__farmer').filter(user=self.request.user)
+
+
+class MixedBoxViewSet(viewsets.ModelViewSet):
+    """CRUD for MixedBox (staff only for create/update/delete; read for all)."""
+    serializer_class = MixedBoxSerializer
+    queryset = MixedBox.objects.prefetch_related('items')
+
+    def get_permissions(self):
+        if self.action in ["list", "retrieve"]:
+            return [permissions.AllowAny()]
+        return [permissions.IsAdminUser()]
 
 
 class OrderDetailUpdateStatusView(generics.RetrieveUpdateAPIView):

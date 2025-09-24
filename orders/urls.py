@@ -1,4 +1,5 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 
 from .views import (
     cart_view,
@@ -8,7 +9,11 @@ from .views import (
     OrderListView,
     OrderDetailUpdateStatusView,
     FarmerOrderHistoryView,
+    MixedBoxViewSet,
 )
+
+router = DefaultRouter()
+router.register(r"mixed-boxes", MixedBoxViewSet, basename="mixed-box")
 
 urlpatterns = [
     path("cart/", cart_view, name="cart"),
@@ -18,5 +23,6 @@ urlpatterns = [
     path("orders/", OrderListView.as_view(), name="orders"),
     path("orders/<int:pk>/", OrderDetailUpdateStatusView.as_view(), name="order-detail"),
     path("farmer/orders/", FarmerOrderHistoryView.as_view(), name="farmer-orders"),
+    path("", include(router.urls)),
 ]
 

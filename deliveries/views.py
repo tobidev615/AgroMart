@@ -1,11 +1,11 @@
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions, status, viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.request import Request
 from django.shortcuts import get_object_or_404
 
-from .models import Delivery, DeliveryStatus
-from .serializers import DeliverySerializer
+from .models import Delivery, DeliveryStatus, DeliveryBatch, DeliveryWindow
+from .serializers import DeliverySerializer, DeliveryBatchSerializer, DeliveryWindowSerializer
 from userprofiles.models import UserType
 
 
@@ -45,3 +45,23 @@ def distributor_mark_delivered(request: Request, pk: int) -> Response:
     delivery.status = DeliveryStatus.DELIVERED
     delivery.save(update_fields=["status"])
     return Response({"detail": "Marked delivered"})
+
+
+class DeliveryWindowViewSet(viewsets.ModelViewSet):
+    serializer_class = DeliveryWindowSerializer
+    queryset = DeliveryWindow.objects.all()
+
+    def get_permissions(self):
+        if self.action in ["list", "retrieve"]:
+            return [permissions.AllowAny()]
+        return [permissions.IsAdminUser()]
+
+
+class DeliveryBatchViewSet(viewsets.ModelViewSet):
+    serializer_class = DeliveryBatchSerializer
+    queryset = DeliveryBatch.objects.select_related("window").all()
+
+    def get_permissions(self):
+        if self.action in ["list", "retrieve"]:
+            return [permissions.AllowAny()]
+        return [permissions.IsAdminUser()]
