@@ -55,6 +55,7 @@ urlpatterns = [
     path('api/v1/distributors/', include('distributors.urls')),
     path('api/v1/consumers/', include('consumers.urls')),
     path('api/v1/', include('payments.urls')),
+    path('api/v1/', include('inventory.urls')),
     
     # Legacy endpoints (redirect to v1)
     path('api/', include('api.urls')),
@@ -68,6 +69,7 @@ urlpatterns = [
     path('api/distributors/', include('distributors.urls')),
     path('api/consumers/', include('consumers.urls')),
     path('api/', include('payments.urls')),
+    path('api/', include('inventory.urls')),
 ]
 
 # Serve static and media files

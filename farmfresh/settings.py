@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'payments',
     'audit',
     'consumers',
+    'inventory',
 ]
 
 # Django REST framework settings (see consolidated config below)
