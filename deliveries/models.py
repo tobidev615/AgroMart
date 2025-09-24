@@ -67,6 +67,13 @@ class Delivery(models.Model):
     delivered_at = models.DateTimeField(null=True, blank=True)
     notes = models.TextField(blank=True)
     batch = models.ForeignKey('deliveries.DeliveryBatch', on_delete=models.SET_NULL, null=True, blank=True, related_name='deliveries')
+    payout_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    payout_status = models.CharField(max_length=20, choices=[
+        ("UNPAID", "Unpaid"),
+        ("PENDING", "Pending"),
+        ("PAID", "Paid"),
+    ], default="UNPAID")
+    payout_reference = models.CharField(max_length=120, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -77,6 +84,7 @@ class Delivery(models.Model):
             models.Index(fields=['scheduled_date']),
             models.Index(fields=['distributor', 'status']),
             models.Index(fields=['batch']),
+            models.Index(fields=['payout_status']),
         ]
 
     def __str__(self) -> str:

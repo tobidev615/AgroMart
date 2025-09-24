@@ -8,6 +8,7 @@ from .views import (
     distributor_mark_delivered,
     DeliveryBatchViewSet,
     DeliveryWindowViewSet,
+    distributor_payout_summary,
 )
 
 router = DefaultRouter()
@@ -19,6 +20,7 @@ urlpatterns = [
     path("deliveries/<int:pk>/", DeliveryDetailView.as_view(), name="delivery-detail"),
     path("deliveries/assigned/", DistributorAssignedDeliveriesList.as_view(), name="deliveries-assigned"),
     path("deliveries/<int:pk>/mark-delivered/", distributor_mark_delivered, name="delivery-mark-delivered"),
+    path("deliveries/payout-summary/", distributor_payout_summary, name="delivery-payout-summary"),
     path("", include(router.urls)),
 ]
 

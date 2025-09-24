@@ -15,6 +15,10 @@ class DeliverySerializer(serializers.ModelSerializer):
             "status",
             "distributor",
             "notes",
+            "batch",
+            "payout_amount",
+            "payout_status",
+            "payout_reference",
             "created_at",
             "updated_at",
         ]
