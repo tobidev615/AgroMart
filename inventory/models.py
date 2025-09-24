@@ -27,6 +27,8 @@ class Product(models.Model):
     slug = models.SlugField(max_length=220, unique=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='products')
     description = models.TextField(blank=True)
+    meta_title = models.CharField(max_length=255, blank=True)
+    meta_description = models.CharField(max_length=300, blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -62,6 +64,23 @@ class ProductVariant(models.Model):
     def __str__(self) -> str:
         label = self.name or self.sku
         return f"{self.product.name} - {label}"
+
+
+class ProductImage(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='products/')
+    alt_text = models.CharField(max_length=255, blank=True)
+    sort_order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["sort_order", "id"]
+        indexes = [
+            models.Index(fields=['product']),
+        ]
+
+    def __str__(self) -> str:
+        return f"Image for {self.product.name}"
 
 
 class InventoryItem(models.Model):
