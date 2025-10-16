@@ -11,50 +11,82 @@ Prefer `/api/v1/` routes. Explore live docs at `/api/docs/` or `/api/redoc/`.
 - `POST /api/v1/accounts/login/` (token)
 - `POST /api/v1/accounts/jwt/login/`, `POST /api/v1/accounts/jwt/refresh/`
 - `GET|PATCH /api/v1/accounts/me/`
+- `GET /api/v1/accounts/verify-email/?uid=...&token=...`
+- `POST /api/v1/accounts/password-reset-request/`
+- `POST /api/v1/accounts/password-reset-confirm/`
 
-### Farmers
-- `GET|POST|PUT|PATCH|DELETE /api/v1/farmers/me/`
-- `GET|POST|PUT|PATCH|DELETE /api/v1/farmers/produce/`
-- `GET /api/v1/farmers/public/produce/` (public list)
-- `GET /api/v1/farmers/public/produce/<id>/`
+### Inventory (Catalog)
+- `GET /api/v1/inventory/categories/`
+- `GET /api/v1/inventory/products/`
+- `GET /api/v1/inventory/variants/`
 
 ### Consumers
 - `GET|PATCH /api/v1/consumers/me/`
 - `GET /api/v1/consumers/dashboard/`
-- `GET|POST|PUT|PATCH|DELETE /api/v1/consumers/wishlist/`
-- `GET|POST|PUT|PATCH|DELETE /api/v1/consumers/reviews/`
+- `GET|POST|PATCH|DELETE /api/v1/consumers/wishlist/`
+- `POST /api/v1/consumers/wishlist/add/`
+- `GET|POST|PATCH|DELETE /api/v1/consumers/reviews/`
+- `POST /api/v1/consumers/reviews/add/`
 - `GET /api/v1/consumers/analytics/`
 - `GET|PATCH /api/v1/consumers/preferences/`
+- `POST /api/v1/consumers/preferences/update/`
 - `POST /api/v1/consumers/favorites/toggle-farmer/`
 - `GET /api/v1/consumers/recommendations/`
 - `GET /api/v1/consumers/order-history/`
+- `GET /api/v1/consumers/spending-analytics/`
 
 ### Orders
-- `GET|POST|PUT|PATCH|DELETE /api/v1/cart/`
-- `GET|POST|PUT|PATCH|DELETE /api/v1/cart/items/`
+- `GET|POST|PUT|DELETE /api/v1/cart/`
+- `GET|POST|PATCH|DELETE /api/v1/cart/items/`
+- `GET|PATCH|DELETE /api/v1/cart/items/<id>/`
 - `POST /api/v1/checkout/`
-- `GET|PUT|PATCH /api/v1/orders/`
-- `GET /api/v1/farmers/orders/`
+- `GET /api/v1/orders/`
+- `GET /api/v1/orders/<id>/`
+- `GET /api/v1/farmer/orders/` – farmer’s orders history
+
+### Payments
+- `GET /api/v1/payments/wallet/`
+- `POST /api/v1/payments/wallet/deposit/`
+- `POST /api/v1/payments/wallet/pay/`
+- `POST /api/v1/payments/checkout-session/`
+- `POST /api/v1/payments/stripe/webhook/` (no auth)
+
+### Deliveries
+- `GET|POST /api/v1/deliveries/` (admin)
+- `GET|PATCH /api/v1/deliveries/<id>/`
+- `GET /api/v1/deliveries/assigned/` (distributor)
+- `POST /api/v1/deliveries/<id>/mark-delivered/` (distributor)
+- `GET /api/v1/deliveries/payout-summary/` (distributor)
+- Delivery windows (RO): via inventory router
+- Delivery batches (RO): via inventory router
+
+### Business
+- `GET|PATCH /api/v1/business/me/`
+- `GET /api/v1/business/orders/`
+- `POST /api/v1/business/bulk-orders/`
+- `GET|POST /api/v1/business/pricing-tiers/` (admin)
+- `GET|PATCH|DELETE /api/v1/business/pricing-tiers/<id>/` (admin)
+- `GET|POST /api/v1/business/contracts/`
+- `GET|PATCH|DELETE /api/v1/business/contracts/<id>/`
+- `POST /api/v1/business/contracts/run-cycle/` (admin)
+- `GET /api/v1/business/invoices/`
+- `GET /api/v1/business/invoices/<id>/`
+- `GET /api/v1/business/logistics/`
+- `GET /api/v1/business/analytics/`
 
 ### Subscriptions
 - `GET /api/v1/subscriptions/plans/`
-- `GET|POST /api/v1/subscriptions/`
-- `GET /api/v1/subscriptions/suggestions/`
-- `POST /api/v1/subscriptions/run-cycle/` (staff)
+- `GET|POST /api/v1/subscriptions/subscriptions/`
+- `GET|PATCH|DELETE /api/v1/subscriptions/subscriptions/<id>/`
+- `GET /api/v1/subscriptions/suggest/`
+- `POST /api/v1/subscriptions/run-cycle/` (admin)
 
 ### Notifications
 - `GET /api/v1/notifications/`
 - `PATCH /api/v1/notifications/<id>/`
-- `GET /api/v1/notifications/stream/` (SSE)
+- `GET /api/v1/notifications/stream/` (SSE; query `access` or `token`)
 
-### Business, Distributors, Deliveries, Payments
-- See live docs and `../documentation_examples/BUSINESS.md` for the Business module.
-- Distributors: profile endpoints under `/api/v1/distributors/…`
-- Deliveries: `/api/v1/deliveries/…` plus `/api/v1/deliveries/assigned/`, `/api/v1/deliveries/<id>/mark-delivered/`
-- Payments: `/api/v1/payments/…` (see live docs)
-
-### Query parameters (common)
-- `page`, `page_size` – pagination
-- `search` – full-text search for supported lists
-- `ordering` – e.g. `name`, `-created_at`
-- Additional filters vary by resource; see OpenAPI.
+### Notes
+- Pagination: `page`, `page_size`
+- Filtering/search: `search`, `ordering`, per-app filters
+- Auth: JWT preferred; DRF Token supported

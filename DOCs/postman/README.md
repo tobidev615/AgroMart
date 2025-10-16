@@ -23,7 +23,7 @@ This folder contains:
 
 ## Common flows for FE devs
 - Accounts: register → jwt/login → me
-- Browse catalog: inventory/categories → inventory/products → farmers/public/produce
+- Browse catalog: inventory/categories → inventory/products
 - Cart/Checkout: cart/items (POST) → checkout → payments/checkout-session
 - Consumers: dashboard, wishlist add, reviews add, preferences update
 - Business: bulk orders, logistics, analytics
