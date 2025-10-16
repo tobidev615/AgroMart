@@ -35,8 +35,8 @@ curl -X POST http://127.0.0.1:8000/api/v1/accounts/login/ \
   -H 'Content-Type: application/json' \
   -d '{"username":"alice","password":"password123"}'
 
-# Authenticated request
-curl http://127.0.0.1:8000/api/v1/farmers/public/produce/?page=1 \
+# Authenticated request (inventory)
+curl http://127.0.0.1:8000/api/v1/inventory/products/?page=1 \
   -H 'Authorization: Bearer <ACCESS>' -H 'Accept: application/json'
 ```
 

@@ -1,8 +1,8 @@
-# Orders API Examples
+# Orders API Examples (v1)
 
 ## Add To Cart
 ```http
-POST /api/cart/items/
+POST /api/v1/cart/items/
 Authorization: Bearer <access>
 Content-Type: application/json
 
@@ -16,7 +16,7 @@ Response 201
 
 ## Checkout
 ```http
-POST /api/checkout/
+POST /api/v1/checkout/
 Authorization: Bearer <access>
 ```
 
@@ -34,7 +34,7 @@ Response 201
 
 ## Update Order Status (Staff)
 ```http
-PATCH /api/orders/42/
+PATCH /api/v1/orders/42/
 Authorization: Bearer <staff-access>
 Content-Type: application/json
 

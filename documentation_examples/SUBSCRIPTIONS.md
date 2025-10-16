@@ -1,38 +1,33 @@
-# Subscriptions API Examples
-
-## Seeding Default Plans
-
-Run one of the following to populate plans:
-
-```bash
-# Full demo dataset (users, produce, orders, deliveries, subscriptions, etc.)
-python manage.py seed_all
-
-# Only subscription plans
-python manage.py seed_plans
-```
+# Subscriptions API Examples (v1)
 
 ## List Plans
 ```http
-GET /api/plans/
+GET /api/v1/subscriptions/plans/
 ```
 
-Response 200
-```json
-[ { "id": 1, "name": "Weekly Box", "period": "WEEKLY", "price": "19.99" } ]
+## My Subscriptions
+```http
+GET /api/v1/subscriptions/subscriptions/
+Authorization: Bearer <access>
 ```
 
 ## Create Subscription
 ```http
-POST /api/subscriptions/
+POST /api/v1/subscriptions/subscriptions/
 Authorization: Bearer <access>
 Content-Type: application/json
 
-{ "plan": 1 }
+{ "plan": 1, "items": [{ "produce_id": 1, "quantity": 2 }] }
 ```
 
-Response 201
-```json
-{ "id": 5, "plan": 1, "status": "ACTIVE" }
+## Suggest Bundles
+```http
+GET /api/v1/subscriptions/suggest/
+Authorization: Bearer <access>
 ```
 
+## Run Cycle (Admin)
+```http
+POST /api/v1/subscriptions/run-cycle/
+Authorization: Bearer <staff-access>
+```

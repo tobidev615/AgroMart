@@ -1,0 +1,234 @@
+{
+  "info": {
+    "name": "FarmFresh API",
+    "_postman_id": "f2a4fe58-43a2-4b37-8d4f-0e8e7a0f4f11",
+    "description": "Comprehensive Postman collection for FarmFresh API. Uses {{baseUrl}}{{apiPrefix}} and collection-level Bearer auth with {{accessToken}}. Includes JWT and DRF token auth flows.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      { "key": "token", "value": "{{accessToken}}", "type": "string" }
+    ]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "{{baseUrl}}" },
+    { "key": "apiPrefix", "value": "{{apiPrefix}}" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "JWT Login",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "{{baseUrl}}{{apiPrefix}}/accounts/jwt/login/", "host": ["{{baseUrl}}"], "path": ["{{apiPrefix}}", "accounts", "jwt", "login", ""] },
+            "body": { "mode": "raw", "raw": "{\n  \"username\": \"alice\",\n  \"password\": \"passw0rd123\"\n}" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let data = {};",
+                  "try { data = pm.response.json(); } catch (e) {}",
+                  "if (data.access) { pm.environment.set('accessToken', data.access); }",
+                  "if (data.refresh) { pm.environment.set('refreshToken', data.refresh); }",
+                  "pm.test('Got access token', function () { pm.expect(!!pm.environment.get('accessToken')).to.be.true; });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "JWT Refresh",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "{{baseUrl}}{{apiPrefix}}/accounts/jwt/refresh/", "host": ["{{baseUrl}}"], "path": ["{{apiPrefix}}", "accounts", "jwt", "refresh", ""] },
+            "body": { "mode": "raw", "raw": "{\n  \"refresh\": \"{{refreshToken}}\"\n}" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let data = {};",
+                  "try { data = pm.response.json(); } catch (e) {}",
+                  "if (data.access) { pm.environment.set('accessToken', data.access); }",
+                  "pm.test('Refreshed access token', function () { pm.expect(!!pm.environment.get('accessToken')).to.be.true; });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "DRF Token Login (Alternative)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "{{baseUrl}}{{apiPrefix}}/accounts/login/", "host": ["{{baseUrl}}"], "path": ["{{apiPrefix}}", "accounts", "login", ""] },
+            "body": { "mode": "raw", "raw": "{\n  \"username\": \"alice\",\n  \"password\": \"passw0rd123\"\n}" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let data = {};",
+                  "try { data = pm.response.json(); } catch (e) {}",
+                  "if (data.token) { pm.environment.set('drfToken', data.token); }",
+                  "pm.test('Got DRF token', function () { pm.expect(!!pm.environment.get('drfToken')).to.be.true; });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health",
+          "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/health/" }
+        },
+        {
+          "name": "Readiness",
+          "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/readiness/" }
+        }
+      ]
+    },
+
+    {
+      "name": "Accounts",
+      "item": [
+        { "name": "Register", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" } ], "url": "{{baseUrl}}{{apiPrefix}}/accounts/register/", "body": { "mode": "raw", "raw": "{\n  \"username\": \"alice\",\n  \"email\": \"alice@example.com\",\n  \"first_name\": \"Alice\",\n  \"last_name\": \"Smith\",\n  \"password\": \"passw0rd123\",\n  \"role\": \"CONSUMER\"\n}" } } },
+        { "name": "Me (GET)", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/accounts/me/" } },
+        { "name": "Me (PATCH)", "request": { "method": "PATCH", "header": [ { "key": "Content-Type", "value": "application/json" } ], "url": "{{baseUrl}}{{apiPrefix}}/accounts/me/", "body": { "mode": "raw", "raw": "{\n  \"delivery_preferences\": {\n    \"contactless\": true\n  }\n}" } } },
+        { "name": "Verify Email", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/accounts/verify-email/?uid=TEST&token=TEST" } },
+        { "name": "Password Reset Request", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" } ], "url": "{{baseUrl}}{{apiPrefix}}/accounts/password-reset-request/", "body": { "mode": "raw", "raw": "{\n  \"email\": \"alice@example.com\"\n}" } } },
+        { "name": "Password Reset Confirm", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" } ], "url": "{{baseUrl}}{{apiPrefix}}/accounts/password-reset-confirm/", "body": { "mode": "raw", "raw": "{\n  \"uid\": \"<from_email>\",\n  \"token\": \"<from_email>\",\n  \"new_password\": \"newPass123!\"\n}" } } }
+      ]
+    },
+
+    {
+      "name": "Farmers",
+      "item": [
+        { "name": "My Profile", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/farmers/me/" } },
+        { "name": "Produce List", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/farmers/produce/" } },
+        { "name": "Produce Create", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" } ], "url": "{{baseUrl}}{{apiPrefix}}/farmers/produce/", "body": { "mode": "raw", "raw": "{\n  \"name\": \"Tomato\",\n  \"variety\": \"Cherry\",\n  \"description\": \"Small and sweet\",\n  \"quantity_available\": 50,\n  \"unit\": \"kg\",\n  \"price_per_unit\": \"4.50\",\n  \"available\": true\n}" } } },
+        { "name": "Public Produce List", "auth": { "type": "noauth" }, "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/farmers/public/produce/" } }
+      ]
+    },
+
+    {
+      "name": "Consumers",
+      "item": [
+        { "name": "Me", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/consumers/me/" } },
+        { "name": "Dashboard", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/consumers/dashboard/" } },
+        { "name": "Wishlist List", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/consumers/wishlist/" } },
+        { "name": "Wishlist Add", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" } ], "url": "{{baseUrl}}{{apiPrefix}}/consumers/wishlist/add/", "body": { "mode": "raw", "raw": "{\n  \"produce_id\": 1,\n  \"quantity\": 2,\n  \"notes\": \"For salad\"\n}" } } },
+        { "name": "Reviews List", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/consumers/reviews/" } },
+        { "name": "Add Review", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" } ], "url": "{{baseUrl}}{{apiPrefix}}/consumers/reviews/add/", "body": { "mode": "raw", "raw": "{\n  \"produce_id\": 1,\n  \"rating\": 5,\n  \"review\": \"Excellent quality produce!\"\n}" } } },
+        { "name": "Preferences", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/consumers/preferences/" } },
+        { "name": "Update Preferences", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" } ], "url": "{{baseUrl}}{{apiPrefix}}/consumers/preferences/update/", "body": { "mode": "raw", "raw": "{\n  \"preferred_produce_types\": [\"vegetables\"],\n  \"notification_channels\": [\"in_app\"]\n}" } } },
+        { "name": "Recommendations", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/consumers/recommendations/" } },
+        { "name": "Order History", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/consumers/order-history/" } },
+        { "name": "Spending Analytics", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/consumers/spending-analytics/" } }
+      ]
+    },
+
+    {
+      "name": "Orders",
+      "item": [
+        { "name": "Cart", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/cart/" } },
+        { "name": "Cart Add Item", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" } ], "url": "{{baseUrl}}{{apiPrefix}}/cart/items/", "body": { "mode": "raw", "raw": "{\n  \"produce_id\": 1,\n  \"quantity\": 2\n}" } } },
+        { "name": "Cart Item Detail", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/cart/items/1/" } },
+        { "name": "Checkout", "request": { "method": "POST", "url": "{{baseUrl}}{{apiPrefix}}/checkout/" } },
+        { "name": "Orders List", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/orders/" } },
+        { "name": "Order Detail", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/orders/1/" } }
+      ]
+    },
+
+    {
+      "name": "Deliveries",
+      "item": [
+        { "name": "Deliveries (admin list/create)", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/deliveries/" } },
+        { "name": "Delivery Detail", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/deliveries/1/" } },
+        { "name": "Assigned Deliveries (distributor)", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/deliveries/assigned/" } },
+        { "name": "Mark Delivered (distributor)", "request": { "method": "POST", "url": "{{baseUrl}}{{apiPrefix}}/deliveries/1/mark-delivered/" } },
+        { "name": "Payout Summary (distributor)", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/deliveries/payout-summary/" } },
+        { "name": "Delivery Windows (RO)", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/inventory/delivery-windows/" } },
+        { "name": "Delivery Batches (RO)", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/inventory/delivery-batches/" } }
+      ]
+    },
+
+    {
+      "name": "Business",
+      "item": [
+        { "name": "My Business Profile", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/business/me/" } },
+        { "name": "My Business Orders", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/business/orders/" } },
+        { "name": "Pricing Tiers (admin list)", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/business/pricing-tiers/" } },
+        { "name": "Create Bulk Order", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" } ], "url": "{{baseUrl}}{{apiPrefix}}/business/bulk-orders/", "body": { "mode": "raw", "raw": "{\n  \"items\": [\n    { \"produce_id\": 1, \"quantity\": 20, \"unit\": \"kg\" }\n  ]\n}" } } },
+        { "name": "Contracts (list/create)", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/business/contracts/" } },
+        { "name": "Invoices (list)", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/business/invoices/" } },
+        { "name": "Logistics Dashboard", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/business/logistics/" } },
+        { "name": "Analytics", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/business/analytics/" } }
+      ]
+    },
+
+    {
+      "name": "Distributors",
+      "item": [
+        { "name": "My Distributor Profile", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/distributors/me/" } }
+      ]
+    },
+
+    {
+      "name": "Payments",
+      "item": [
+        { "name": "Wallet Detail", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/payments/wallet/" } },
+        { "name": "Wallet Deposit", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" } ], "url": "{{baseUrl}}{{apiPrefix}}/payments/wallet/deposit/", "body": { "mode": "raw", "raw": "{\n  \"amount\": \"25.00\",\n  \"reference\": \"test-deposit\"\n}" } } },
+        { "name": "Pay Order with Wallet", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" } ], "url": "{{baseUrl}}{{apiPrefix}}/payments/wallet/pay/", "body": { "mode": "raw", "raw": "{\n  \"order_id\": 1\n}" } } },
+        { "name": "Create Stripe Checkout Session", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" } ], "url": "{{baseUrl}}{{apiPrefix}}/payments/checkout-session/", "body": { "mode": "raw", "raw": "{\n  \"order_id\": 1\n}" } } },
+        { "name": "Stripe Webhook (dev)", "auth": { "type": "noauth" }, "request": { "method": "POST", "header": [ { "key": "Stripe-Signature", "value": "{{stripeSignature}}" } ], "url": "{{baseUrl}}{{apiPrefix}}/payments/stripe/webhook/" } }
+      ]
+    },
+
+    {
+      "name": "Notifications",
+      "item": [
+        { "name": "List Notifications", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/notifications/" } },
+        { "name": "Notification Detail (PATCH)", "request": { "method": "PATCH", "header": [ { "key": "Content-Type", "value": "application/json" } ], "url": "{{baseUrl}}{{apiPrefix}}/notifications/1/", "body": { "mode": "raw", "raw": "{\n  \"is_read\": true\n}" } } },
+        { "name": "Notifications Stream (SSE)", "auth": { "type": "noauth" }, "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/notifications/stream/?access={{accessToken}}" } }
+      ]
+    },
+
+    {
+      "name": "Subscriptions",
+      "item": [
+        { "name": "Plans", "auth": { "type": "noauth" }, "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/subscriptions/plans/" } },
+        { "name": "My Subscriptions", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/subscriptions/subscriptions/" } },
+        { "name": "Create Subscription", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" } ], "url": "{{baseUrl}}{{apiPrefix}}/subscriptions/subscriptions/", "body": { "mode": "raw", "raw": "{\n  \"plan\": 1,\n  \"items\": [\n    { \"produce_id\": 1, \"quantity\": 2 }\n  ]\n}" } } },
+        { "name": "Subscription Detail", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/subscriptions/subscriptions/1/" } },
+        { "name": "Suggest Bundles", "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/subscriptions/suggest/" } },
+        { "name": "Run Subscription Cycle (admin)", "request": { "method": "POST", "url": "{{baseUrl}}{{apiPrefix}}/subscriptions/run-cycle/" } }
+      ]
+    },
+
+    {
+      "name": "Inventory (Catalog)",
+      "item": [
+        { "name": "Categories", "auth": { "type": "noauth" }, "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/inventory/categories/" } },
+        { "name": "Products", "auth": { "type": "noauth" }, "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/inventory/products/" } },
+        { "name": "Variants", "auth": { "type": "noauth" }, "request": { "method": "GET", "url": "{{baseUrl}}{{apiPrefix}}/inventory/variants/" } }
+      ]
+    }
+  ]
+}

@@ -1,9 +1,9 @@
-# Accounts API Examples
+# Accounts API Examples (v1)
 
 ## Register
 Request
 ```http
-POST /api/accounts/register/
+POST /api/v1/accounts/register/
 Content-Type: application/json
 
 {
@@ -28,7 +28,7 @@ Response 201
 ## JWT Login
 Request
 ```http
-POST /api/accounts/jwt/login/
+POST /api/v1/accounts/jwt/login/
 Content-Type: application/json
 
 { "username": "alice", "password": "passw0rd123" }
@@ -42,7 +42,7 @@ Response 200
 ## Me
 Request
 ```http
-GET /api/accounts/me/
+GET /api/v1/accounts/me/
 Authorization: Bearer <access>
 ```
 
@@ -50,5 +50,3 @@ Response 200
 ```json
 { "id": 1, "username": "alice", "email": "alice@example.com", "profile": {"role": "CONSUMER"}}
 ```
-
-

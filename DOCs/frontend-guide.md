@@ -41,26 +41,13 @@ async function refreshAccess() {
 }
 ```
 
-### Example: list produce with pagination, search, ordering
+### Example: list catalog with pagination, search, ordering
 ```javascript
-async function listPublicProduce({ page = 1, pageSize = 20, search = '', ordering = '-created_at' } = {}) {
+async function listProducts({ page = 1, pageSize = 20, search = '', ordering = '-created_at' } = {}) {
   const params = { page, page_size: pageSize, search, ordering };
-  const { data } = await api.get('/farmers/public/produce/', { params });
+  const { data } = await api.get('/inventory/products/', { params });
   // DRF pagination shape: { count, next, previous, results }
   return data;
-}
-```
-
-### Handling errors
-- Error responses include `detail` (string), `code` (string), and `request_id`.
-- 400 may include `field_errors` (object of field → [errors]).
-
-```javascript
-function toUserMessage(error) {
-  if (!error.response) return 'Network error';
-  const { status, data } = error.response;
-  if (data.field_errors) return 'Please correct highlighted fields.';
-  return data.detail || `Request failed (${status})`;
 }
 ```
 
@@ -85,7 +72,15 @@ function connectNotificationsSSE() {
 }
 ```
 
-### Common tips
-- Respect throttle limits: back off on 429; use `errors.md` guidance.
-- Prefer server-side filtering/search; avoid fetching massive lists.
-- Send `X-Request-ID` to trace requests; surface `request_id` in UI on failures for faster support.
+### Handling errors
+- Error responses include `detail` (string), `code` (string), and `request_id`.
+- 400 may include `field_errors` (object of field → [errors]).
+
+```javascript
+function toUserMessage(error) {
+  if (!error.response) return 'Network error';
+  const { status, data } = error.response;
+  if (data.field_errors) return 'Please correct highlighted fields.';
+  return data.detail || `Request failed (${status})`;
+}
+```
