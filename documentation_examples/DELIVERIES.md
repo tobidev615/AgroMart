@@ -1,8 +1,8 @@
-# Deliveries API Examples
+# Deliveries API Examples (v1)
 
 ## Create Delivery (Staff)
 ```http
-POST /api/deliveries/
+POST /api/v1/deliveries/
 Authorization: Bearer <staff-access>
 Content-Type: application/json
 
@@ -16,7 +16,7 @@ Response 201
 
 ## Mark Delivered (Distributor)
 ```http
-POST /api/deliveries/7/mark-delivered/
+POST /api/v1/deliveries/7/mark-delivered/
 Authorization: Bearer <distributor-access>
 ```
 
@@ -25,4 +25,8 @@ Response 200
 { "detail": "Marked delivered" }
 ```
 
-
+## Payout Summary (Distributor)
+```http
+GET /api/v1/deliveries/payout-summary/
+Authorization: Bearer <distributor-access>
+```

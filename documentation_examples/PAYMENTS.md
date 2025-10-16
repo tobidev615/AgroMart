@@ -1,8 +1,8 @@
-# Payments API Examples
+# Payments API Examples (v1)
 
 ## Create Checkout Session
 ```http
-POST /api/payments/checkout-session/
+POST /api/v1/payments/checkout-session/
 Authorization: Bearer <access>
 Content-Type: application/json
 
@@ -16,7 +16,7 @@ Response 200
 
 ## Stripe Webhook
 ```http
-POST /api/payments/stripe/webhook/
+POST /api/v1/payments/stripe/webhook/
 Stripe-Signature: <signature>
 ```
 
@@ -25,4 +25,24 @@ Response 200
 { "status": "received" }
 ```
 
+## Wallet
+```http
+GET /api/v1/payments/wallet/
+Authorization: Bearer <access>
+```
 
+```http
+POST /api/v1/payments/wallet/deposit/
+Authorization: Bearer <access>
+Content-Type: application/json
+
+{ "amount": "25.00", "reference": "test-deposit" }
+```
+
+```http
+POST /api/v1/payments/wallet/pay/
+Authorization: Bearer <access>
+Content-Type: application/json
+
+{ "order_id": 1 }
+```
