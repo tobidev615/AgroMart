@@ -8,6 +8,7 @@ class UserType(models.TextChoices):
     OTHERS = "OTHERS", "Others"
     BUSINESS = "BUSINESS", "Business"
     DISTRIBUTOR = "DISTRIBUTOR", "Distributor"
+    STAFF = "STAFF", "Staff"
 
 
 class UserProfile(models.Model):

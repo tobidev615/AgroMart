@@ -1,15 +1,19 @@
 import stripe
 from django.conf import settings
-from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework import permissions
+from rest_framework import permissions, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-# from weasyprint import HTML  # Disabled due to system dependency issues
 
 from orders.models import Order
 from .models import Payment, PaymentStatus
-# from .models import Invoice  # Temporarily disabled
+from .models import Wallet
+from .serializers import (
+    WalletSerializer,
+    WalletDepositSerializer,
+    PaymentSerializer,
+)
+from .services import wallet_deposit, pay_order_from_wallet, ensure_wallet
 
 
 @api_view(["POST"]) 
@@ -80,3 +84,36 @@ def stripe_webhook(request):
         # invoice = Invoice.objects.create(user=order.user, order=order)
         # invoice.file.save(f"invoice_{order.id}.pdf", pdf_io)
     return Response(status=200)
+
+
+@api_view(["GET"]) 
+@permission_classes([permissions.IsAuthenticated])
+def wallet_detail(request):
+    wallet = ensure_wallet(request.user)
+    return Response(WalletSerializer(wallet).data)
+
+
+@api_view(["POST"]) 
+@permission_classes([permissions.IsAuthenticated])
+def wallet_deposit_view(request):
+    serializer = WalletDepositSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    amount = serializer.validated_data["amount"]
+    reference = serializer.validated_data.get("reference", "")
+    tx = wallet_deposit(request.user, amount, reference, metadata={"source": "api"})
+    wallet = tx.wallet
+    return Response({"wallet": WalletSerializer(wallet).data}, status=status.HTTP_201_CREATED)
+
+
+@api_view(["POST"]) 
+@permission_classes([permissions.IsAuthenticated])
+def pay_order_with_wallet(request):
+    order_id = request.data.get("order_id")
+    if not order_id:
+        return Response({"detail": "order_id is required"}, status=400)
+    try:
+        order = Order.objects.get(id=order_id, user=request.user)
+    except Order.DoesNotExist:
+        return Response({"detail": "Order not found"}, status=404)
+    payment = pay_order_from_wallet(request.user, order, amount=None)
+    return Response(PaymentSerializer(payment).data, status=200)

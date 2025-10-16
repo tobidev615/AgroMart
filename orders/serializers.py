@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from farmers.models import Produce
 from farmers.serializers import ProduceSerializer
-from .models import Cart, CartItem, Order, OrderItem, OrderStatus
+from .models import Cart, CartItem, Order, OrderItem, OrderStatus, MixedBox, MixedBoxItem
 from farmers.serializers import FarmerProfileSerializer
 
 
@@ -46,11 +46,17 @@ class OrderItemSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "produce",
+            "mixed_box",
+            "dry_variant",
             "product_name",
             "unit",
             "price_per_unit",
             "quantity",
             "subtotal",
+            "is_substituted",
+            "substituted_product_name",
+            "shortage_quantity",
+            "refunded_amount",
         ]
 
 
@@ -64,9 +70,13 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "status",
+            "payment_status",
+            "payment_intent_id",
             "total_amount",
             "items",
             "farmer_items",
+            "delivery_window",
+            "delivery_fee",
             "created_at",
             "updated_at",
         ]
@@ -79,3 +89,44 @@ class OrderSerializer(serializers.ModelSerializer):
         items = obj.items.filter(produce__farmer=farmer_profile)
         return OrderItemSerializer(items, many=True).data
 
+
+class MixedBoxItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MixedBoxItem
+        fields = ["id", "produce", "quantity"]
+
+
+class MixedBoxSerializer(serializers.ModelSerializer):
+    items = MixedBoxItemSerializer(many=True)
+
+    class Meta:
+        model = MixedBox
+        fields = [
+            "id",
+            "name",
+            "size",
+            "description",
+            "price",
+            "is_active",
+            "items",
+            "created_at",
+            "updated_at",
+        ]
+
+    def create(self, validated_data):
+        items_data = validated_data.pop("items", [])
+        box = MixedBox.objects.create(**validated_data)
+        for item in items_data:
+            MixedBoxItem.objects.create(box=box, **item)
+        return box
+
+    def update(self, instance, validated_data):
+        items_data = validated_data.pop("items", None)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        if items_data is not None:
+            instance.items.all().delete()
+            for item in items_data:
+                MixedBoxItem.objects.create(box=instance, **item)
+        return instance
